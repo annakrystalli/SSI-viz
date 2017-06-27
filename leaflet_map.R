@@ -24,7 +24,7 @@ spdf <- SpatialPointsDataFrame(coords = rse_pc[,c("longitude", "latitude")], dat
                        proj4string = CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
 
 #' ## INTERACTIVE LEAFLET PLOT
-m <- leaflet(data = spdf) %>% addTiles() %>% addMarkers()
+m <- leaflet(data = spdf) %>% addProviderTiles(providers$OpenStreetMap, group = "OSM") %>% addMarkers()
 m    
   
 
@@ -39,6 +39,6 @@ leafIcons <- icons(
     shadowAnchorX = 4, shadowAnchorY = 62
 )
 #' INTERACTIVE LEAFLET PLOT
-leaflet(data = spdf) %>% addTiles() %>% addMarkers(icon = leafIcons)
+leaflet(data = spdf) %>% addProviderTiles(providers$OpenStreetMap, group = "OSM") %>% addMarkers(icon = leafIcons)
 
 
