@@ -24,4 +24,4 @@ code licenced under the terms of the [MIT](https://github.com/annakrystalli/SSI-
 
 <br>
 
-`postcodes.csv` dataset licensed under [Open Government License](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/) for public sector information.
+`ukpostcodes.csv` dataset licensed under [Open Government License](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/) for public sector information ([source](https://www.freemaptools.com/download-uk-postcode-lat-lng.htm)).
