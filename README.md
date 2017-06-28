@@ -1,5 +1,5 @@
 # SSI-viz
-SSI location visualisation
+RSE location visualisation
 
 ***
 
@@ -9,6 +9,7 @@ See rendered visualisations [here](https://annakrystalli.github.io/SSI-viz/leafl
 
 
 <br>
+
 ***
 
 ### LICENSING
