@@ -2,9 +2,24 @@
 
 #' ### pkgs
 if (!require("pacman")) install.packages("pacman")
-pkgs <- c("leaflet", "tidyverse","sp", "spatstat")
+pkgs <- c("leaflet", "tidyverse","sp", "spatstat", "wesanderson")
 pacman::p_unload(pacman::p_loaded(), character.only = T)
 pacman::p_load(pkgs, character.only = T)
+#' ### custom functions
+#' **`cap_first`** <https://gist.github.com/annakrystalli/70820dbfd0457601ddd0203dcc3a8476>
+cap_first <- function(X){
+    simple_cap <- function(x) {
+        s <- strsplit(x, " ")[[1]]
+        out <- paste(toupper(substring(s, 1,1)), substring(s, 2),
+                     sep="", collapse=" ")
+        out <- gsub("And", "and", out)
+        out <- gsub("&", "and", out)
+        out <- gsub("Of", "of", out)
+        out
+    }
+    sapply(X, simple_cap, USE.NAMES = F) 
+}
+
 
 #' ### data
 pc_coords <- read_csv("data/ukpostcodes.csv") # source: https://www.freemaptools.com/download-uk-postcode-lat-lng.htm
@@ -23,10 +38,33 @@ rse_pc <- rse_pc %>% left_join(pc_coords, by = "postcode")
 spdf <- SpatialPointsDataFrame(coords = rse_pc[,c("longitude", "latitude")], data = rse_pc,
                        proj4string = CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
 
-#' ## INTERACTIVE LEAFLET PLOT
+#' ***
+#' ## INTERACTIVE LEAFLET PLOTS
+#' ### Basic
 m <- leaflet(data = spdf) %>% addProviderTiles(providers$OpenStreetMap, group = "OSM") %>% addMarkers()
 m    
   
+#' ### RSE count ~ size of circle
+#' RSE count indicated by size of circle, single colour. Hover over institutional info
+leaflet(data = spdf) %>% addProviderTiles(providers$OpenStreetMap, group = "OSM") %>% 
+    addCircleMarkers(radius = ~Count/1.4, fillOpacity = 0.5,
+                     label = ~cap_first(Name),
+                     color = wes_palette("GrandBudapest")[2])
+
+#' ## RSE count ~ size of circle + colour scale
+#' RSE count indicated by size of circle as well as colour scale. Hover over institutional info. Colour palette from `wesanderson` package. 
+pal <- colorNumeric(
+    palette = as.character(wes_palette("Darjeeling")[c(2,3,4,1)]),
+    domain = spdf$Count)
+
+leaflet(data = spdf) %>% addProviderTiles(providers$OpenStreetMap, group = "OSM") %>% 
+    addCircleMarkers(radius = ~Count, fillOpacity = 0.7, 
+                     color = ~pal(Count),
+                     stroke = FALSE,
+                     label = ~cap_first(Name)) %>%
+    addLegend("bottomright", pal = pal, values = ~Count,
+              title = "RSE counts",
+              opacity = 1)
 
 #' #### Special ICON
 #' Make a custom icon. See more [here](http://rstudio.github.io/leaflet/markers.html)
