@@ -19,7 +19,12 @@ cap_first <- function(X){
     }
     sapply(X, simple_cap, USE.NAMES = F) 
 }
-
+#' **`get_radius`** used to get radius to correctly represent relative area of circles, consistent with the concept of 
+#' [proportional ink](https://makingmaps.net/2007/08/28/perceptual-scaling-of-map-symbols/) as discussed in
+#' [Calling Bull*** tutorial](http://callingbullshit.org/tools/tools_proportional_ink.html?utm_content=buffer8d9fb&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer)
+get_radius <- function(area){
+    sqrt(area/pi)
+}
 
 #' ### data
 pc_coords <- read_csv("data/ukpostcodes.csv") # source: https://www.freemaptools.com/download-uk-postcode-lat-lng.htm
@@ -45,23 +50,28 @@ m <- leaflet(data = spdf) %>% addProviderTiles(providers$OpenStreetMap, group = 
 m    
   
 #' ### RSE count ~ size of circle
+#' use parameter `size` to multiply proportional areas by a constant.
+size <- 4
 #' RSE count indicated by size of circle, single colour. Hover over institutional info
 leaflet(data = spdf) %>% addProviderTiles(providers$OpenStreetMap, group = "OSM") %>% 
-    addCircleMarkers(radius = ~Count/1.4, fillOpacity = 0.5,
-                     label = ~cap_first(Name),
+    addCircleMarkers(radius = ~get_radius(Count)*size, fillOpacity = 0.5,
+                     label = ~paste0(cap_first(Name), " (", Count, ")"),
                      color = wes_palette("GrandBudapest")[2])
 
 #' ## RSE count ~ size of circle + colour scale
 #' RSE count indicated by size of circle as well as colour scale. Hover over institutional info. Colour palette from `wesanderson` package. 
+#' use parameter `size` to multiply proportional areas by a constant.
+size <- 4
+# create palette
 pal <- colorNumeric(
     palette = as.character(wes_palette("Darjeeling")[c(2,3,4,1)]),
     domain = spdf$Count)
 
 leaflet(data = spdf) %>% addProviderTiles(providers$OpenStreetMap, group = "OSM") %>% 
-    addCircleMarkers(radius = ~Count, fillOpacity = 0.7, 
+    addCircleMarkers(radius = ~get_radius(Count)*size, fillOpacity = 0.7, 
                      color = ~pal(Count),
                      stroke = FALSE,
-                     label = ~cap_first(Name)) %>%
+                     label = ~paste0(cap_first(Name), " (", Count, ")")) %>%
     addLegend("bottomright", pal = pal, values = ~Count,
               title = "RSE counts",
               opacity = 1)

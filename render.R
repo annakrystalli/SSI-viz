@@ -5,3 +5,4 @@ pacman::p_load(pkgs, character.only = T)
 #webshot::install_phantomjs()
 #knitr::spin("leaflet_map.R", format = c("Rmd"))
 rmarkdown::render("leaflet_map.R") 
+
